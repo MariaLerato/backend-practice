@@ -1,16 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {BrowserRouter,Routes,Route, Router} from 'react-router-dom'
+import { AddUser } from './Components/addUser';
 import { Login } from './Components/Login';
-import { Users } from './Components/Users';
-
+import { UserList } from './Components/userList';
+import {Users} from './Components/Users'
 function App() {
+  const [user,setUser] = useState(null)
+  
+  // async function login(user = null){
+  //   setUser(user)
+  // }
+  // async function logout(){
+  //   setUser(null)
+  // }
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
-         
-          <Route exact path = {'/'} element={<Users/>}/>
-          {/* <Route exact path={'/'} element={<Login/>} /> */}
+        {/* <Route path=element={ <Login />}/> */}
+          <Route exact path = {'/userList'} element={<UserList/>}/>
+          <Route path='/'  element={ <Users  />}/>
+          <Route path='/addUser' element={ <AddUser />}/>
+        
         </Routes>
       </BrowserRouter>
     </div>

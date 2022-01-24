@@ -1,46 +1,63 @@
-import React, { useState, useEffect } from "react";
-import UsersDataService from "../services/users";
-import { Link } from "react-router-dom";
+import React,{useState,useEffect} from 'react';
+import UserDataService from '../services/users'
+import { Link } from 'react-router-dom';
 
-export const Users = () => {
-  const [users, setUsers] = useState([]);
-  const [searchName, setSearchName] = useState();
 
-  const retrieveUsers = () => {
-    UsersDataService.getAll()
-      .then((response) => {
-        console.log(response.data);
-        setUsers(response.data.users);
+export const Users = (props) => {
+  const initialUsersState = {
+    id:null,
+    name:"",
+    text:"",
+    user_id:""
+  }
+  const [user,setUser] = useState(initialUsersState)
+
+  const getUsers = (id)=>{
+    UserDataService.get(id)
+    .then(response=>{
+      setUser(response.data);
+      console.log(response.data)
+    })
+    .catch(e=>{
+      console.log(e)
+    })
+
+   
+  };
+  useEffect(()=>{
+    getUsers(props.match.params.id);
+
+  },[props.match.params.id]);
+
+  const deleteUser = (userId,index)=>{
+    UserDataService.deleteUser(userId)
+    .then(response =>{
+      setUser((prevState)=>{
+        prevState.user.splice(index,1)
+        return({
+          ...prevState
+        })
       })
-      .catch((e) => {
-        console.log(e);
-      });
-  };
-  const onChangeSearchName = (e) => {
-    const SearchName = e.target.value;
-    setSearchName(SearchName);
-  };
+    })
+    .catch(e=>{
+      console.log(e)
+    })
+  }
 
-  useEffect(() => {
-    retrieveUsers();
-  }, []);
-  console.log('Users : ', users)
   return (
-    <>
+  <div>
+    {user ? (
       <div>
-        <input type={"text"} placeholder="Enter Name" />
-        <input type={"text"} placeholder="Enter Description" />
-        <button type="submit">Save Info</button>
+        <h4>{user.name}</h4>
+        <p>
+          <strong>Description:</strong>{user.text} <br />
+          <strong>UserId:</strong>{user.user_id}
+        </p>
+         <Link to ={'/addUser' + props.match.params.id}>
+           Add User
+         </Link>
       </div>
-      {users.map((data)=>
-                      <ul key={data._id}>
-                          <h5>{data.name}</h5>
-                          <p>{data.text}</p>
-                          {data.date}
-                      </ul>
-                 
-          
-      )}
-    </>
+    ):null}
+  </div>
   );
 };
